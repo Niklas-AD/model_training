@@ -48,31 +48,34 @@ ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta
 ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
 # install Mask2Former
 RUN pip install --user -e detectron2_repo
-RUN git clone https://github.com/facebookresearch/Mask2Former 
+RUN git clone https://github.com/Niklas-AD/Mask2Former 
 RUN pip install -U opencv-python
 RUN pip install -r  Mask2Former/requirements.txt
 RUN sudo -E python Mask2Former/mask2former/modeling/pixel_decoder/ops/setup.py build install
+
+#pytorch bugfix https://stackoverflow.com/questions/70520120/attributeerror-module-setuptools-distutils-has-no-attribute-version
+RUN pip install setuptools==59.5.0
+
 #Cityscapes setup
 RUN mkdir /home/appuser/.local/share/cityscapesscscripts
 COPY credentials.json /home/appuser/.local/share/cityscapesscripts/credentials.json
 ENV CITYSCAPES_DATASET = "/home/appuser/Mask2Former/datasets/cityscapes"
 COPY cityscapes_download.py /home/appuser
 RUN python cityscapes_download.py
-ARG CACHEBUST=3
 RUN unzip -q -o gtFine_trainvaltest.zip
 RUN unzip -q -o leftImg8bit_trainvaltest.zip
 RUN mkdir /home/appuser/Mask2Former/datasets/cityscapes
 RUN mv gtFine Mask2Former/datasets/cityscapes
 RUN mv leftImg8bit Mask2Former/datasets/cityscapes
-ARG CACHEBUST=5
 COPY cityscapes_setup.py /home/appuser
 RUN python cityscapes_setup.py
 
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"
 
+WORKDIR /home/appuser/Mask2Former
+# ENTRYPOINT Setup Model training here
 
-#WORKDIR /home/appuser/detectron2_repo
 
 # run detectron2 under user "appuser":
 # wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
