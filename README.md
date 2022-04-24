@@ -1,7 +1,7 @@
 # model_training
 
 build docker file with 
-'''docker build -t training . '''
+'''docker build --build-arg USER_ID=$UID -t training . '''
 
 run docker
 ''' 
