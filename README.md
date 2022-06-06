@@ -1,7 +1,6 @@
 # model_training
 docker build -t training .
 
-<<<<<<< HEAD
 enroot import --output training.sqsh  dockerd://training:latest
 
 enroot bundle --output training.run training.sqsh 
