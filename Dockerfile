@@ -1,9 +1,10 @@
 FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
-# might change to ubuntu:18.04
-
 # use an older system (18.04) to avoid opencv incompatibility (issue#3524)
 
 ENV DEBIAN_FRONTEND noninteractive
+
+#Fix Bugs due to https://developer.nvidia.com/blog/updating-the-cuda-linux-gpg-repository-key/
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
 
 
 RUN apt-get update && apt-get install -y \
@@ -15,24 +16,16 @@ RUN apt-get update && apt-get install -y \
     sudo \
     ninja-build \
     unzip
-RUN ln -sv /usr/bin/python3 /usr/bin/python
 
-# create a non-root user
-ARG USER_ID=1000
-RUN useradd -m --no-log-init --system  --uid ${USER_ID} appuser -g sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER appuser
-WORKDIR /home/appuser
-ENV PATH="/home/appuser/.local/bin:${PATH}"
 RUN wget https://bootstrap.pypa.io/pip/3.6/get-pip.py && \
-	python3 get-pip.py --user && \
+	python3 get-pip.py  && \
 	rm get-pip.py
 
 # install dependencies
 # See https://pytorch.org/ for other options if you use a different version of CUDA
-RUN pip install --user tensorboard cmake   # cmake from apt-get is too old
-RUN pip install --user torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
-RUN pip install --user 'git+https://github.com/facebookresearch/fvcore'
+RUN pip install tensorboard cmake   # cmake from apt-get is too old
+RUN pip install torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+RUN pip install 'git+https://github.com/facebookresearch/fvcore'
 
 #install Data handeling tools
 RUN pip install git+https://github.com/Niklas-AD/panopticapi.git
@@ -47,39 +40,19 @@ ENV FORCE_CUDA="1"
 ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta;Turing"
 ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
 # install Mask2Former
-RUN pip install --user -e detectron2_repo
+RUN pip install -e detectron2_repo
 RUN git clone https://github.com/Niklas-AD/Mask2Former 
 RUN pip install -U opencv-python
 RUN pip install -r  Mask2Former/requirements.txt
-RUN sudo -E python Mask2Former/mask2former/modeling/pixel_decoder/ops/setup.py build install
+RUN sudo -E python3 Mask2Former/mask2former/modeling/pixel_decoder/ops/setup.py build install
+
+#Download Pretrained SWIN-L
+RUN wget https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_large_patch4_window12_384_22k.pth -P /Mask2Former
 
 #pytorch bugfix https://stackoverflow.com/questions/70520120/attributeerror-module-setuptools-distutils-has-no-attribute-version
 RUN pip install setuptools==59.5.0
 
-#Cityscapes setup
-RUN mkdir /home/appuser/.local/share/cityscapesscscripts
-COPY credentials.json /home/appuser/.local/share/cityscapesscripts/credentials.json
-ENV CITYSCAPES_DATASET = "/home/appuser/Mask2Former/datasets/cityscapes"
-COPY cityscapes_download.py /home/appuser
-RUN python cityscapes_download.py
-RUN unzip -q -o gtFine_trainvaltest.zip
-RUN unzip -q -o leftImg8bit_trainvaltest.zip
-RUN mkdir /home/appuser/Mask2Former/datasets/cityscapes
-RUN mv gtFine Mask2Former/datasets/cityscapes
-RUN mv leftImg8bit Mask2Former/datasets/cityscapes
-COPY cityscapes_setup.py /home/appuser
-RUN python cityscapes_setup.py
-
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"
 
-WORKDIR /home/appuser/Mask2Former
-# ENTRYPOINT Setup Model training here
-
-
-# run detectron2 under user "appuser":
-# wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg
-# python3 demo/demo.py  \
-	#--config-file configs/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml \
-	#--input input.jpg --output outputs/ \
-	#--opts MODEL.WEIGHTS detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl
+WORKDIR  /Mask2Former
