@@ -8,7 +8,7 @@
 
 
 #Make output directory
-FOO=run_$(date +%Y-%M-%d_%H-%M-%S)
+FOO=run_$(date +%Y-%m-%d_%H-%M-%S)
 mkdir $FOO
 
 #Datensatz nach $TMP Kopieren
