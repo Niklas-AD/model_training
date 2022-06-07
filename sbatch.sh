@@ -14,6 +14,6 @@ mkdir $FOO
 #Datensatz nach $TMP Kopieren
 cp -r ReducedDataset $TMP
 
-./training.run -m $TMP/ReducedDataset/:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 8
+./training.run -w -m $TMP/ReducedDataset/:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 8
 
 
