@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --job-name=swin_training
-#SBATCH --time=2:30:00
+#SBATCH --time=24:00:00
 # Further options: https://wiki.bwhpc.de/e/BwUniCluster_2.0_Slurm_common_Features
 
 
