@@ -3,5 +3,8 @@ enroot_3.4.0-1_amd64.deb
 training_latest.tar.gz
 training.sqsh
 training.run
+training_v2.run
+model_final.pth
 /output
 /ReducedDataset
+/demo
