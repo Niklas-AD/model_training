@@ -11,5 +11,3 @@ sbatch sbatch.sh
 
 
 Container unterstützt alle Resnet Backbone Modelle +  Swin-L, da hier die Datei mit den Gewichten gedownloadet wurde und im Container ist. 
-
-Hinweis: Eigentlich soll vor dem Training der Swin Modelle die Datei mit den Gewichten von pth in eine pkl Datei mithilfe von https://github.com/Niklas-AD/Mask2Former/tree/main/tools umgewandelt werden. Da es dann aber mit Python 3.6 Probleme gibt, ist einfach in der Konfigurationsdatei die Datei geändert worden. Das Modell trainiert dann ohne Probleme, allerdings besteht das Risiko, dass einige Gewichte falsch eingelesen wurden.
