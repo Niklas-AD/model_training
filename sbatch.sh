@@ -14,7 +14,7 @@ mkdir $FOO
 #Datensatz nach $TMP Kopieren
 cp -r cityscapes $TMP
 
-#No speedup by more GPUs - Reason Unclear, doesn´t seem to be CPU bottleneck - maybe memory
+#single GPU
 #./training.run -w -m $TMP/cityscapes:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 8
 
 ./training.run -w -m $TMP:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 1 SOLVER.IMS_PER_BATCH 2
