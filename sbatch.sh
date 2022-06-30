@@ -15,8 +15,4 @@ mkdir $FOO
 cp -r cityscapes $TMP
 
 #Training
-#./training_v2.run -w -m $TMP:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 8
-
-#Testing
-./training_v2.run -w -m $TMP:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 2 SOLVER.IMS_PER_BATCH 4
-
+./training_v2.run -w -m $TMP:Mask2Former/datasets -m $FOO:Mask2Former/output python3 train_net.py --config-file configs/cityscapes/panoptic-segmentation/swin/maskformer2_swin_large_IN21k_384_bs16_90k.yaml --num-machines 1 --num-gpus 8
